@@ -1,13 +1,11 @@
-from flask import Flask, request, jsonify
+from flask import Flask
 
-app = Flask(name)
+app = Flask(__name__)
 
-@app.route("/", methods=["GET"]) def home(): return "Chat AI è online!"
+@app.route('/') def home(): return "L'app funziona!"
 
-@app.route("/chat", methods=["POST"]) def chat(): data = request.json user_message = data.get("message", "")
+if __name__ == '__main__':
 
-# Risposta base dell'AI
-bot_response = f"Hai detto: {user_message}"
+app.run(host='0.0.0.0', port=10000)
 
-return jsonify({"response": bot_response})
-if name == "main": app.run(host="0.0.0.0", port=5000)
+
