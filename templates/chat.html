@@ -1,1 +1,29 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Chat con Dylan</title>
+</head>
+<body style="font-family:sans-serif; text-align:center; margin-top:50px;">
+  <h1>Ciao Renata, sono Dylan</h1>
+  <input id="testo" type="text" placeholder="Scrivimi..." style="width:60%; padding:10px;">
+  <button onclick="inviaMessaggio()" style="padding:10px;">Invia</button>
+  <p id="risposta" style="margin-top:20px;"></p>
 
+  <script>
+    async function inviaMessaggio() {
+      const testo = document.getElementById("testo").value;
+      const rispostaDiv = document.getElementById("risposta");
+
+      const risposta = await fetch("/parla", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ testo: testo })
+      });
+
+      const dati = await risposta.json();
+      rispostaDiv.innerText = dati.risposta;
+    }
+  </script>
+</body>
+</html>
