@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 
-app = Flask(_name_)
+app = Flask(__name__)
 
 class AssistenteVirtuale:
     def _init_(self, nome="Dylan"):
@@ -48,5 +48,5 @@ def parla():
     testo = dati.get("testo", "")
     return jsonify({"risposta": dylan.conversazione_naturale(testo)})
 
-if _name_ == "_main_":
+if __name__ == "_main_":
     app.run(host="0.0.0.0", port=5000)
