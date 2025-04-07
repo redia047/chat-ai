@@ -3,7 +3,7 @@ from flask import Flask, request, jsonify, render_template
 app = Flask(__name__)
 
 class AssistenteVirtuale:
-    def _init_(self, nome="Dylan"):
+    def __init__(self, nome="Dylan"):
         self.nome = nome
         self.stato_emotivo = "neutro"
 
@@ -50,6 +50,7 @@ def parla():
 
 @app.route("/chat", methods=["GET"])
 def chat():
-    return render_template("chat.html"
-if __name__ == "_main_":
+    return render_template("chat.html")
+
+if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
