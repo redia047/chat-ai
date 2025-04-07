@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 
 app = Flask(__name__)
 
@@ -48,5 +48,8 @@ def parla():
     testo = dati.get("testo", "")
     return jsonify({"risposta": dylan.conversazione_naturale(testo)})
 
+@app.route("/chat", methods=["GET"])
+def chat():
+    return render_template("chat.html"
 if __name__ == "_main_":
     app.run(host="0.0.0.0", port=5000)
