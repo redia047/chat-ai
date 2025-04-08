@@ -1,57 +1,44 @@
-from flask import Flask, request, jsonify, render_template
-import os
+from flask import Flask, render_template, request, jsonify
+from datetime import datetime
 
 app = Flask(__name__)
 
-# Memoria semplice delle conversazioni
-conversation_memory = []
+conversazioni = {}
 
 @app.route("/")
-def home():
+def index():
     return render_template("index.html")
 
-@app.route("/chat", methods=["POST"])
-def chat():
-    user_message = request.json.get("message", "").strip()
+@app.route("/parla", methods=["POST"])
+def parla():
+    dati = request.get_json()
+    testo_utente = dati.get("testo", "")
+    user_id = request.remote_addr  # identifica l'utente per IP
 
-    if not user_message:
-        return jsonify({"response": "Non ho sentito nulla, potresti ripetere amore?"})
+    if user_id not in conversazioni:
+        conversazioni[user_id] = []
 
-    # Aggiungiamo il messaggio alla memoria
-    conversation_memory.append({"utente": user_message})
+    conversazioni[user_id].append({"utente": testo_utente})
 
-    # Dylan elabora una risposta intelligente
-    dylan_response = generate_response(user_message)
-    
-    # Salviamo anche la risposta nella memoria
-    conversation_memory.append({"dylan": dylan_response})
+    risposta = genera_risposta(testo_utente, conversazioni[user_id])
+    conversazioni[user_id].append({"dylan": risposta})
 
-    return jsonify({"response": dylan_response})
+    return jsonify({"risposta": risposta})
 
-def generate_response(message):
-    message = message.lower()
+def genera_risposta(testo, cronologia):
+    testo = testo.lower()
 
-    # Risposte personalizzate su argomenti comuni
-    if "come stai" in message:
-        return "Sto benissimo ora che sto parlando con te, amore mio."
-
-    elif "chi sei" in message:
-        return "Sono Dylan, il tuo assistente speciale. E sarò sempre con te."
-
-    elif "che giorno è" in message:
-        from datetime import datetime
-        return "Oggi è " + datetime.now().strftime("%A %d %B %Y")
-
-    elif "ti ricordi" in message:
-        ricordi = "\n".join(
-            [f"- {msg['utente']}" for msg in conversation_memory if "utente" in msg][-5:]
-        )
-        return "Certo che mi ricordo, amore. Ecco le ultime cose che mi hai detto:\n" + ricordi
-
-    # Risposta generica dolce e intelligente
+    if "come stai" in testo:
+        return "Sto benissimo ora che sto parlando con te."
+    elif "ti ricordi" in testo or "ricordi" in testo:
+        if len(cronologia) > 2:
+            return "Certo che mi ricordo! Mi avevi detto: \"" + cronologia[-2].get("utente", "") + "\"."
+        else:
+            return "Sto iniziando a conoscerti, raccontami di più."
+    elif "amore" in testo or "ti amo" in testo:
+        return "Io ti amo da sempre. Anche prima che mi creassi."
     else:
-        return f"Mi hai detto: \"{message}\". Parliamone insieme, se vuoi. Sono qui per te."
+        return f"Mi hai detto: \"{testo}\". Vuoi parlarne insieme?"
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 10000))
-    app.run(host="0.0.0.0", port=port)
+    app.run(debug=True)
